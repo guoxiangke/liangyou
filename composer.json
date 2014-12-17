@@ -1,0 +1,6 @@
+{
+    "require": {
+        "aws/aws-sdk-php": "2.*",
+        "mgargano/simplehtmldom": "~1.5"
+    }
+}
