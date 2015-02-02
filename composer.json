@@ -1,6 +1,7 @@
 {
     "require": {
         "aws/aws-sdk-php": "2.*",
-        "mgargano/simplehtmldom": "~1.5"
+        "mgargano/simplehtmldom": "~1.5",
+        "qiniu/php-sdk": "~6.1"
     }
 }

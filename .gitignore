@@ -2,3 +2,6 @@ vendor/
 sftp-config.json
 composer.lock
 *.back
+audios/
+audioindex.txt
+bcs/

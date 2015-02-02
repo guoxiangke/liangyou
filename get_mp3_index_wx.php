@@ -1,10 +1,10 @@
 <?php
 //check if get already? cron once a day!
 $file_path = dirname(__FILE__).'/cron/nzzlist/';
-$file_key = $file_path . date('Ymd') . '.md3';
+$file_key = $file_path . date('Ymd') . '.json';
 // $file_store_key = $file_path .'/store/'. date('Ymd') . '.txt';
 if(file_exists($file_key))  {
-    header('location:cron/nzzlist/'. date('Ymd') . '.md3');
+    header('location:cron/nzzlist/'. date('Ymd') . '.json');
 	// echo 'Warning: File ' . $file_key . ' exists! Exit!!!';
 	return;
 }
@@ -43,14 +43,15 @@ $url = array_flip($url);
 
 foreach ($url as $id => $value) {
     if(strstr($value,'良友圣经学院')) {
-        continue;
-        // $titles = explode('-', $value);
-        // $value = $titles[1];
+        // continue;
+        $titles = explode('-', $value);
+        $value = $titles[1];
     }
     // $value = preg_replace('（([^（）]+)）','', $value);
     //生命的四季（星期一至五为直播，节目会於直播完毕后上载）
     if(strstr($value,'生命的四季')) $value = '生命的四季';
-    if(strstr($value,'天路导向（')) $value = '天路导向1';
+    if(strstr($value,'天路导向（')) continue; 
+    //$value = '天路导向1';
     if(strstr($value,'关怀心磁场')) $value = '关怀心磁场';
 	$urls["url.asp?id=".$id]['title'] = $value;
 }

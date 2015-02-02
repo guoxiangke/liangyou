@@ -81,38 +81,63 @@ foreach ($urls as $url => $value) {
         // echo $value['title'] . ':' .$mp3_link;
         // return; 6834724
         if(1||filesize($tempfile)>1034724) {
+            require_once 'bcs/bcs.class.php';
+            $host = 'bcs.duapp.com'; //online
+            $ak = 'QZx6vWlxLOpxZGkX25cRiiFT';
+            $sk = 'dG3uuqhSBNww29x5z0yo3G1ovyKPvOph';
+            $bucket = 'liangyou';
+            $upload_dir = "../";
+            // $object = $tempfile;
+            $object = $local_dir . '/audios/liangyou/audio/201501/晨曦讲座/20150115.mp3';
+            $my_obj = "liangyou/audio/201501/晨曦讲座/20150115.mp3";
+            // $my_obj = 'liangyou/audio/'.date('Y').'/'.$value['title'].'/'.date('m').'/'.date('Ymd') .'.mp3';
+            $fileUpload = $my_obj;
+            $fileWriteTo = './a.' . time () . '.txt';
+            $baidu_bcs = new BaiduBCS ( $ak, $sk, $host );
+
+            // global $fileUpload, $object, $bucket;
+            $opt = array ();
+            $opt ['acl'] = BaiduBCS::BCS_SDK_ACL_TYPE_PUBLIC_WRITE;
+            $opt [BaiduBCS::IMPORT_BCS_LOG_METHOD] = "bs_log";
+            $opt ['curlopts'] = array (
+                    CURLOPT_CONNECTTIMEOUT => 10, 
+                    CURLOPT_TIMEOUT => 1800 );
+
+            $response = $baidu_bcs->create_object ( $bucket, $object, $fileUpload, $opt );
+            printResponse ( $response );
+            return ;
             // Instantiate an S3 client
-            $s3 = S3Client::factory(array(
-                'key'    => 'AKIAJZSII3KHTLKFGB5A',
-                'secret' => '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',
-            ));
-            echo 'downloaded!!!';
-            $my_obj = 'liangyou/audio/'.date('Y').'/'.$value['title'].'/'.date('m').'/'.date('Ymd') .'.mp3';
-            try {
-                $result = $s3->putObject(array(
-                    'Bucket' => 'ybzx',
-                    'Key'    => $my_obj,
-                    'Body'   => fopen($tempfile, 'r'),
-                    'ACL'    => 'public-read',
-                ));
-                // Access parts of the result object
-                echo $result['Expiration'] . "\n";
-                echo $result['ServerSideEncryption'] . "\n";
-                echo $result['ETag'] . "\n";
-                echo $result['VersionId'] . "\n";
-                echo $result['RequestId'] . "\n";
+            // $s3 = S3Client::factory(array(
+            //     'key'    => 'AKIAJZSII3KHTLKFGB5A',
+            //     'secret' => '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',
+            // ));
+            // echo 'downloaded!!!';
+            // $my_obj = 'liangyou/audio/'.date('Y').'/'.$value['title'].'/'.date('m').'/'.date('Ymd') .'.mp3';
+            // try {
+            //     $result = $s3->putObject(array(
+            //         'Bucket' => 'ybzx',
+            //         'Key'    => $my_obj,
+            //         'Body'   => fopen($tempfile, 'r'),
+            //         'ACL'    => 'public-read',
+            //     ));
+            //     // Access parts of the result object
+            //     echo $result['Expiration'] . "\n";
+            //     echo $result['ServerSideEncryption'] . "\n";
+            //     echo $result['ETag'] . "\n";
+            //     echo $result['VersionId'] . "\n";
+            //     echo $result['RequestId'] . "\n";
 
-                // Get the URL the object can be downloaded from
-                echo $result['ObjectURL'] . "\n";
+            //     // Get the URL the object can be downloaded from
+            //     echo $result['ObjectURL'] . "\n";
 
-                // unlink($tempfile);               
-                file_put_contents($logfile, $my_obj."\n",FILE_APPEND);                
+            //     // unlink($tempfile);               
+            //     file_put_contents($logfile, $my_obj."\n",FILE_APPEND);                
 
-                $urls = json_encode($urls);
-                file_put_contents( $file_key , $urls);
-            } catch (S3Exception $e) {
-                var_dump($e->getMessage());
-            }
+            //     $urls = json_encode($urls);
+            //     file_put_contents( $file_key , $urls);
+            // } catch (S3Exception $e) {
+            //     var_dump($e->getMessage());
+            // }
 
         }
         //https://s3.amazonaws.com/ybzx/liangyou/audio/2014/晨曦讲座/12/20141227.mp3
@@ -120,4 +145,17 @@ foreach ($urls as $url => $value) {
 
     break;
 	}
+}
+
+
+function printResponse($response) {
+    echo $response->isOK () ? "OK\n" : "NOT OK\n";
+    echo 'Status:' . $response->status . "\n";
+    echo 'Body:' . $response->body . "\n";
+    echo "Header:\n";
+    var_dump ( $response->header );
+}
+
+function bs_log($log) {
+    trigger_error ( basename ( __FILE__ ) . " [time: " . time () . "][LOG: $log]" );
 }
